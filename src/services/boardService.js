@@ -1,10 +1,5 @@
 /* eslint-disable no-useless-catch */
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
-
+import { cloneDeep } from 'lodash';
 import { slugify } from '~/utils/formatters';
 import { boardModel } from '~/models/boardModel';
 import ApiError from '~/utils/ApiError';
@@ -36,8 +31,22 @@ const getDetails = async (boardId) => {
 			throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found');
 		}
 
+		const resBoard = cloneDeep(board);
+		// đưa card vào từng column
+		resBoard.columns.forEach((column) => {
+			column.cards = resBoard.cards.filter(
+				// .equals là phương thức của MongoDB
+				(card) => card.columnId.equals(column._id),
+
+				// (card) => card.columnId.toString() === column._id.toString(),
+			);
+		});
+
+		// xóa mảng cards ở board ban đầu
+		delete resBoard.cards;
+
 		//trả kết quả về, trong Service luôn có return
-		return board;
+		return resBoard;
 	} catch (error) {
 		throw error;
 	}

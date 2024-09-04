@@ -34,8 +34,9 @@ export const CLOSE_DB = async () => {
 	await mongoClientInstance.close();
 };
 
-//function GET_D (không async) có nhiệm vụ export ra trellDatabaseInstance đã kết nối tới MongoDB để sử dụng ở nhiều nơi khác nhau trong code
+//function GET_DB (không async) có nhiệm vụ export ra trellDatabaseInstance đã kết nối tới MongoDB để sử dụng ở nhiều nơi khác nhau trong code
 export const GET_DB = () => {
-	if (!trelloDatabaseInstance) throw new Error('must connect to database first');
+	if (!trelloDatabaseInstance)
+		throw new Error('must connect to database first');
 	return trelloDatabaseInstance;
 };
