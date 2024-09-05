@@ -14,10 +14,10 @@ const createNew = async (reqBody) => {
 		const createdBoard = await boardModel.createNew(newBoard);
 
 		// lấy bản ghi vừa tạo thành công, trả về cho frontend
-		const getNewboard = await boardModel.findOneById(createdBoard.insertedId);
+		const getNewBoard = await boardModel.findOneById(createdBoard.insertedId);
 
 		//trả kết quả về, trong Service luôn có return
-		return getNewboard;
+		return getNewBoard;
 	} catch (error) {
 		throw error;
 	}
@@ -51,6 +51,7 @@ const getDetails = async (boardId) => {
 		throw error;
 	}
 };
+
 export const boardService = {
 	getDetails,
 	createNew,
