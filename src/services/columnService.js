@@ -1,4 +1,5 @@
 /* eslint-disable no-useless-catch */
+import { boardModel } from '~/models/boardModel';
 import { columnModel } from '~/models/columnModel';
 
 const createNew = async (reqBody) => {
@@ -12,6 +13,13 @@ const createNew = async (reqBody) => {
 		const getNewColumn = await columnModel.findOneById(
 			createdColumn.insertedId,
 		);
+
+		if (getNewColumn) {
+			getNewColumn.cards = [];
+
+			// cập nhật mảng columnOrderIds của collection board
+			await boardModel.pushColumnOrderIds(getNewColumn);
+		}
 
 		//trả kết quả về, trong Service luôn có return
 		return getNewColumn;
