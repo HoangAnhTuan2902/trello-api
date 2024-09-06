@@ -4,6 +4,8 @@ import { slugify } from '~/utils/formatters';
 import { boardModel } from '~/models/boardModel';
 import ApiError from '~/utils/ApiError';
 import { StatusCodes } from 'http-status-codes';
+import { columnModel } from '~/models/columnModel';
+import { cardModel } from '~/models/cardModel';
 
 const createNew = async (reqBody) => {
 	try {
@@ -65,8 +67,35 @@ const update = async (boardId, reqBody) => {
 	}
 };
 
+const moveCardToDifferentColumn = async (reqBody) => {
+	try {
+		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
+
+		// B1: cập nhật lại cardOrderIds của column cũ chứa nó
+		await columnModel.update(reqBody.prevColumnId, {
+			cardOrderIds: reqBody.prevCardOrderIds,
+			updatedAt: Date.now(),
+		});
+		// B2: cập nhật lại cardOrderIds của column mới chứa nó
+		await columnModel.update(reqBody.nextColumnId, {
+			cardOrderIds: reqBody.nextCardOrderIds,
+			updatedAt: Date.now(),
+		});
+		// B3: cập nhật lại columnId của card được kéo
+		await cardModel.update(reqBody.currentCardId, {
+			columnId: reqBody.nextColumnId,
+		});
+
+		//trả kết quả về, trong Service luôn có return
+		return { updateResult: 'success' };
+	} catch (error) {
+		throw error;
+	}
+};
+
 export const boardService = {
 	getDetails,
 	createNew,
 	update,
+	moveCardToDifferentColumn,
 };
