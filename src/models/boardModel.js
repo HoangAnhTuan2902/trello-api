@@ -116,7 +116,12 @@ const update = async (boardId, updateData) => {
 			}
 		});
 
-		// console.log('updateData', updateData);
+		// biến đổi dữ liệu liên quan tới ObjectId
+		if (updateData.columnOrderIds) {
+			updateData.columnOrderIds = updateData.columnOrderIds?.map(
+				(cardId) => new ObjectId(cardId),
+			);
+		}
 
 		const result = await GET_DB()
 			.collection(BOARD_COLLECTION_NAME)
