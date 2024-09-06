@@ -26,6 +26,37 @@ const createNew = async (req, res, next) => {
 	}
 };
 
+const update = async (req, res, next) => {
+	// update không dùng required
+	const correctCondition = Joi.object({
+		boardId: Joi.string()
+			.pattern(OBJECT_ID_RULE)
+			.message(OBJECT_ID_RULE_MESSAGE),
+		title: Joi.string().min(3).max(50).trim().strict(),
+		cardOrderIds: Joi.array().items(
+			Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+		),
+	});
+
+	try {
+		// chỉ định abortEarly: false để hiển thị tất cả các lỗi
+		await correctCondition.validateAsync(req.body, {
+			abortEarly: false,
+			allowUnknown: true,
+		});
+		// đưa request đến Controller sau khi đã validate thành công
+		next();
+	} catch (error) {
+		const errorMessage = new Error(error).message;
+		const customError = new ApiError(
+			StatusCodes.UNPROCESSABLE_ENTITY,
+			errorMessage,
+		);
+		next(customError);
+	}
+};
+
 export const columnValidation = {
 	createNew,
+	update,
 };

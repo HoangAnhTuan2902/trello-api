@@ -28,6 +28,20 @@ const createNew = async (reqBody) => {
 	}
 };
 
+const update = async (columnId, reqBody) => {
+	try {
+		const updateData = { ...reqBody, updatedAt: Date.now() };
+		// gọi tới tầng Model để xử lý lưu bản ghi newColumn vào trong Database
+		const updatedColumn = await columnModel.update(columnId, updateData);
+
+		//trả kết quả về, trong Service luôn có return
+		return updatedColumn;
+	} catch (error) {
+		throw error;
+	}
+};
+
 export const columnService = {
 	createNew,
+	update,
 };

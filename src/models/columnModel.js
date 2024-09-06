@@ -30,6 +30,8 @@ const validateBeforeCreate = async (data) => {
 	});
 };
 
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createAt'];
+
 const createNew = async (data) => {
 	try {
 		const validData = await validateBeforeCreate(data);
@@ -76,10 +78,33 @@ const pushCardOrderIds = async (card) => {
 	}
 };
 
+const update = async (columnId, updateData) => {
+	try {
+		Object.keys(updateData).forEach((fieldname) => {
+			if (INVALID_UPDATE_FIELDS.includes(fieldname)) {
+				delete updateData[fieldname];
+			}
+		});
+
+		const result = await GET_DB()
+			.collection(COLUMN_COLLECTION_NAME)
+			.findOneAndUpdate(
+				{ _id: new ObjectId(columnId) },
+				{ $set: updateData },
+				{ returnDocument: 'after' },
+			);
+
+		return result;
+	} catch (error) {
+		throw new Error(error);
+	}
+};
+
 export const columnModel = {
 	COLUMN_COLLECTION_NAME,
 	COLUMN_COLLECTION_SCHEMA,
 	pushCardOrderIds,
 	findOneById,
 	createNew,
+	update,
 };
