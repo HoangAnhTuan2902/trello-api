@@ -40,7 +40,7 @@ const START_SERVER = () => {
 		app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
 			// eslint-disable-next-line no-console
 			console.log(
-				`3. Hi local DEV: ${env.AUTHOR}, Back-End Server is running successfully at: http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`,
+				`3. Local: Hi ${env.AUTHOR}, Back-End Server is running successfully at: http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`,
 			);
 		});
 	}
