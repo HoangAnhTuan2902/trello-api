@@ -3,7 +3,7 @@ import { columnService } from '~/services/columnService';
 
 const createNew = async (req, res, next) => {
 	try {
-		console.log('req.body', req.body);
+		// console.log('req.body', req.body);
 
 		// điều hướng dữ liệu sang service
 		const createdColumn = await columnService.createNew(req.body);

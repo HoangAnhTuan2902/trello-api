@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import { boardRoute } from './boardRoute';
 import { columnRoute } from './columnRoute';
 import { cardRoute } from './cardRoute';
+import { registerRoute } from './auth/registerRoute';
+import { loginRoute } from './auth/loginRoute';
 
 const Router = express.Router();
 
@@ -19,6 +21,12 @@ Router.use('/boards', boardRoute);
 Router.use('/columns', columnRoute);
 
 /**Cards APIs */
-Router.use('/Cards', cardRoute);
+Router.use('/cards', cardRoute);
+
+/** Register */
+Router.use('/auth/register', registerRoute);
+
+/** Login */
+Router.use('/auth/login', loginRoute);
 
 export const APIs_V1 = Router;
