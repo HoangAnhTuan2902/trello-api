@@ -13,11 +13,12 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
 	try {
-		await authService.login(req.body);
+		const loginUser = await authService.login(req.body);
 
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: 'Login successfully',
+			data: loginUser,
 		});
 	} catch (error) {
 		next(error);
