@@ -27,12 +27,23 @@ const START_SERVER = () => {
 	//middleware xử lý tập trung
 	app.use(errorHandlingMiddleware);
 
-	app.listen(env.APP_PORT, env.APP_HOST, () => {
-		// eslint-disable-next-line no-console
-		console.log(
-			`3. Hi ${env.AUTHOR}, Back-End Server is running successfully at: http://${env.APP_HOST}:${env.APP_PORT}/`,
-		);
-	});
+	// Môi trường production (hiện tại là render.com)
+	if (env.BUILD_MODE === 'production') {
+		app.listen(process.env.PORT, () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`3. Production: Hi ${env.AUTHOR}, Back-End Server is running successfully at Port: ${process.env.PORT}`,
+			);
+		});
+	} else {
+		// môi trường local development
+		app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`3. Hi local DEV: ${env.AUTHOR}, Back-End Server is running successfully at: http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`,
+			);
+		});
+	}
 
 	// thực hiện cleanup trước khi dừng server
 	//
