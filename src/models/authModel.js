@@ -1,7 +1,6 @@
 import { GET_DB } from '~/config/mongodb';
 const Joi = require('joi');
 import bcrypt from 'bcrypt';
-const saltRounds = 10;
 
 const USERS_COLLECTION_NAME = 'users';
 const USERS_COLLECTION_SCHEMA = Joi.object({
@@ -33,11 +32,15 @@ const findOneById = async (userId) => {
 };
 
 // Tìm người dùng theo email
-const findOneByEmail = async (email) => {
+const findOneByEmail = async (email, includePassword = false) => {
+	const projection = includePassword ? {} : { password: 0 }; // Nếu includePassword là true thì không loại bỏ trường password
 	try {
-		return await GET_DB()
-			.collection(USERS_COLLECTION_NAME)
-			.findOne({ email: email });
+		return await GET_DB().collection(USERS_COLLECTION_NAME).findOne(
+			{ email: email },
+			{
+				projection,
+			},
+		);
 	} catch (error) {
 		throw new Error(error);
 	}
@@ -45,6 +48,7 @@ const findOneByEmail = async (email) => {
 
 // Hàm đăng ký người dùng
 const register = async (data) => {
+	const saltRounds = 10;
 	try {
 		// Xác thực dữ liệu đầu vào
 		const validData = await validateBeforeCreate(data);
@@ -69,7 +73,7 @@ const register = async (data) => {
 
 const login = async (data) => {
 	try {
-		const user = await findOneByEmail(data.email);
+		const user = await findOneByEmail(data.email, true);
 
 		if (!user) {
 			throw new Error('Email not found');
