@@ -9,6 +9,7 @@ const register = async (req, res, next) => {
 
 		res.status(StatusCodes.CREATED).json({
 			success: true,
+			status: StatusCodes.CREATED,
 			message: 'Register successfully',
 		});
 	} catch (error) {
@@ -17,6 +18,8 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+	console.log('res', req.cookies.access_token);
+
 	try {
 		const loginUser = await authService.login(req.body);
 
@@ -29,8 +32,17 @@ const login = async (req, res, next) => {
 			expiresIn: '1d',
 		});
 
+		// thiết lập cookie HTTP-Only
+		res.cookie('access_token', accessToken, {
+			httpOnly: true,
+			secure: env.BUILD_MODE === 'dev', // only use secure in production environment
+			sameSite: 'strict', // protect against CSRF
+			maxAge: 24 * 60 * 60 * 1000, // 1 day
+		});
+
 		res.status(StatusCodes.OK).json({
 			success: true,
+			status: StatusCodes.OK,
 			message: 'Login successfully',
 			access_token: accessToken,
 			user: loginUser,

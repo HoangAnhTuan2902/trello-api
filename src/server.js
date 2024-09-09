@@ -1,19 +1,19 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
-import express from 'express';
 import exitHook from 'async-exit-hook';
-import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb';
+import cors from 'cors';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+
+import { CLOSE_DB, CONNECT_DB } from '~/config/mongodb';
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 import { env } from '~/config/environment';
 import { APIs_V1 } from '~/routes/v1';
-import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
-import cors from 'cors';
 import { corsOptions } from './config/cors';
 
 const START_SERVER = () => {
 	const app = express();
+
+	// Sử dụng cookie-parser
+	app.use(cookieParser());
 
 	// Xử lý CORS
 	app.use(cors(corsOptions));

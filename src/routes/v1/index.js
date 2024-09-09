@@ -6,6 +6,7 @@ import { columnRoute } from './columnRoute';
 import { cardRoute } from './cardRoute';
 import { registerRoute } from './auth/registerRoute';
 import { loginRoute } from './auth/loginRoute';
+import authMiddleware from '~/middlewares/authMiddleware';
 
 const Router = express.Router();
 
@@ -15,13 +16,13 @@ Router.get('/status', (req, res) => {
 });
 
 /**Board APIs */
-Router.use('/boards', boardRoute);
+Router.use('/boards', authMiddleware, boardRoute);
 
 /**Columns APIs */
-Router.use('/columns', columnRoute);
+Router.use('/columns', authMiddleware, columnRoute);
 
 /**Cards APIs */
-Router.use('/cards', cardRoute);
+Router.use('/cards', authMiddleware, cardRoute);
 
 /** Register */
 Router.use('/auth/register', registerRoute);
