@@ -28,7 +28,7 @@ const login = async (req, res, next) => {
 			email: loginUser.email,
 			fullname: loginUser.fullname,
 			username: loginUser.username,
-			avartar: 'comming soon',
+			avatar: loginUser.avatar,
 		};
 
 		const accessToken = jwt.sign(payload, env.JWT_SECRET, {
