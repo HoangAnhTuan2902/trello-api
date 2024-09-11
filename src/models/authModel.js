@@ -7,7 +7,7 @@ const USERS_COLLECTION_SCHEMA = Joi.object({
 	email: Joi.string().email().required().trim().strict(),
 	username: Joi.string().required().min(3).max(30).trim().strict(),
 	password: Joi.string().required().min(6).trim().strict(),
-	fullName: Joi.string().required().min(3).max(50).trim().strict(),
+	fullname: Joi.string().required().min(3).max(50).trim().strict(),
 	createdAt: Joi.date().timestamp('javascript').default(Date.now),
 	updatedAt: Joi.date().timestamp('javascript').default(null),
 	_destroy: Joi.boolean().default(false),

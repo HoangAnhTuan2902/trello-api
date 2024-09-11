@@ -4,7 +4,7 @@ import ApiError from '~/utils/ApiError';
 
 const register = async (req, res, next) => {
 	const correctCondition = Joi.object({
-		fullName: Joi.string().required().min(3).max(50).trim().strict(),
+		fullname: Joi.string().required().min(3).max(50).trim().strict(),
 		username: Joi.string().required().min(3).max(30).trim().strict(),
 		password: Joi.string().required().min(6).trim().strict(),
 		email: Joi.string().email().required(),

@@ -7,6 +7,7 @@ import { cardRoute } from './cardRoute';
 import { registerRoute } from './auth/registerRoute';
 import { loginRoute } from './auth/loginRoute';
 import authMiddleware from '~/middlewares/authMiddleware';
+import { checkAuthRoute } from './auth/checkAuthRoute';
 
 const Router = express.Router();
 
@@ -29,5 +30,7 @@ Router.use('/auth/register', registerRoute);
 
 /** Login */
 Router.use('/auth/login', loginRoute);
+
+Router.use('/auth/check', checkAuthRoute);
 
 export const APIs_V1 = Router;

@@ -22,10 +22,13 @@ const login = async (req, res, next) => {
 
 	try {
 		const loginUser = await authService.login(req.body);
+		console.log('loginUser', loginUser);
 
 		const payload = {
-			payload: loginUser.username,
 			email: loginUser.email,
+			fullname: loginUser.fullname,
+			username: loginUser.username,
+			avartar: 'comming soon',
 		};
 
 		const accessToken = jwt.sign(payload, env.JWT_SECRET, {
@@ -52,7 +55,35 @@ const login = async (req, res, next) => {
 	}
 };
 
+const checkAuth = (req, res) => {
+	try {
+		const token = req.cookies.access_token;
+
+		if (!token) {
+			return res.status(StatusCodes.UNAUTHORIZED).json({
+				success: false,
+				status: StatusCodes.UNAUTHORIZED,
+				message: 'User not authenticated',
+			});
+		}
+
+		const verified = jwt.verify(token, env.JWT_SECRET);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			status: StatusCodes.OK,
+			user: verified, // Thông tin người dùng sau khi xác minh JWT
+		});
+	} catch (error) {
+		res.status(StatusCodes.UNAUTHORIZED).json({
+			success: false,
+			status: StatusCodes.UNAUTHORIZED,
+			message: 'Invalid token',
+		});
+	}
+};
+
 export const authController = {
 	login,
 	register,
+	checkAuth,
 };
