@@ -82,8 +82,22 @@ const checkAuth = (req, res) => {
 	}
 };
 
+const logout = (req, res) => {
+	try {
+		res.clearCookie('access_token');
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: 'logged out',
+		});
+	} catch (error) {
+		() => {};
+	}
+};
+
 export const authController = {
 	login,
 	register,
 	checkAuth,
+	logout,
 };

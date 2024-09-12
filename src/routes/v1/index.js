@@ -8,6 +8,7 @@ import { registerRoute } from './auth/registerRoute';
 import { loginRoute } from './auth/loginRoute';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { checkAuthRoute } from './auth/checkAuthRoute';
+import { logoutRoute } from './auth/logoutRoute';
 
 const Router = express.Router();
 
@@ -30,6 +31,9 @@ Router.use('/auth/register', registerRoute);
 
 /** Login */
 Router.use('/auth/login', loginRoute);
+
+/**Logout */
+Router.use('/auth/logout', logoutRoute);
 
 Router.use('/auth/check', checkAuthRoute);
 
