@@ -1,55 +1,54 @@
-import { ObjectId } from 'mongodb';
-import Joi from 'joi';
-import { GET_DB } from '~/config/mongodb';
-import { BOARD_TYPES } from '~/utils/constants';
-import { columnModel } from './columnModel';
-import { cardModel } from './cardModel';
+import Joi from 'joi'
+import { ObjectId } from 'mongodb'
+import { GET_DB } from '~/config/mongodb'
+import { BOARD_TYPES } from '~/utils/constants'
+import { cardModel } from './cardModel'
+import { columnModel } from './columnModel'
 
 // define Collection (Name & Schema)
 
-const BOARD_COLLECTION_NAME = 'boards';
+const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
 	title: Joi.string().required().min(3).max(50).trim().strict(),
 	slug: Joi.string().required().min(3).trim().strict(),
 	description: Joi.string().required().min(3).max(255).trim().strict(),
 	type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
+	bgImage: Joi.string().uri().required(),
 	columnOrderIds: Joi.array().items(Joi.string()).default([]),
 	createAt: Joi.date().timestamp('javascript').default(Date.now()),
 	updatedAt: Joi.date().timestamp('javascript').default(null),
 	_destroy: Joi.boolean().default(false),
-});
+})
 
-const INVALID_UPDATE_FIELDS = ['_id', 'createAt'];
+const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
 
 // thêm các dữ liệu mặc định cho các trường cần thiết trước khi tạo mới bản ghi
 const validateBeforeCreate = async (data) => {
 	return await BOARD_COLLECTION_SCHEMA.validateAsync(data, {
 		abortEarly: false,
-	});
-};
+	})
+}
 
 const createNew = async (data) => {
 	try {
-		const validData = await validateBeforeCreate(data);
-		const createdBoard = await GET_DB()
-			.collection(BOARD_COLLECTION_NAME)
-			.insertOne(validData);
-		return createdBoard;
+		const validData = await validateBeforeCreate(data)
+		const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
+		return createdBoard
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
 
 const findOneById = async (id) => {
 	try {
 		const result = await GET_DB()
 			.collection(BOARD_COLLECTION_NAME)
-			.findOne({ _id: new ObjectId(id) });
-		return result;
+			.findOne({ _id: new ObjectId(id) })
+		return result
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
 
 // query tổng hợp (aggregate) để lấy toàn bộ columns thuộc về Board
 const getDetails = async (id) => {
@@ -83,12 +82,18 @@ const getDetails = async (id) => {
 					},
 				},
 			])
-			.toArray();
-		return result[0] || null;
+			.toArray()
+		return result[0] || null
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
+
+const getAll = async () => {
+	const reusult = GET_DB().collection(BOARD_COLLECTION_NAME).find().toArray()
+
+	return reusult
+}
 
 // push 1 giá trị columnId vào cuối mảng columnOrderIds của board
 const pushColumnOrderIds = async (column) => {
@@ -99,13 +104,13 @@ const pushColumnOrderIds = async (column) => {
 				{ _id: new ObjectId(column.boardId) },
 				{ $push: { columnOrderIds: new ObjectId(column._id) } },
 				{ returnDocument: 'after' },
-			);
+			)
 
-		return result;
+		return result
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
 /** lấy 1 phần từ columnId ra khỏi mảng columnOrderIds
  * dùng $pull trong MongoDB để kéo 1 phần tử ra khỏi mảng
  */
@@ -117,43 +122,37 @@ const pullColumnOrderIds = async (column) => {
 				{ _id: new ObjectId(column.boardId) },
 				{ $pull: { columnOrderIds: new ObjectId(column._id) } },
 				{ returnDocument: 'after' },
-			);
+			)
 
-		return result;
+		return result
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
 
 const update = async (boardId, updateData) => {
 	try {
 		// lọc những field không cho phép cập nhật
 		Object.keys(updateData).forEach((fieldName) => {
 			if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
-				delete updateData[fieldName];
+				delete updateData[fieldName]
 			}
-		});
+		})
 
 		// biến đổi dữ liệu liên quan tới ObjectId
 		if (updateData.columnOrderIds) {
-			updateData.columnOrderIds = updateData.columnOrderIds?.map(
-				(cardId) => new ObjectId(cardId),
-			);
+			updateData.columnOrderIds = updateData.columnOrderIds?.map((cardId) => new ObjectId(cardId))
 		}
 
 		const result = await GET_DB()
 			.collection(BOARD_COLLECTION_NAME)
-			.findOneAndUpdate(
-				{ _id: new ObjectId(boardId) },
-				{ $set: updateData },
-				{ returnDocument: 'after' },
-			);
+			.findOneAndUpdate({ _id: new ObjectId(boardId) }, { $set: updateData }, { returnDocument: 'after' })
 
-		return result;
+		return result
 	} catch (error) {
-		throw new Error(error);
+		throw new Error(error)
 	}
-};
+}
 
 export const boardModel = {
 	BOARD_COLLECTION_NAME,
@@ -164,4 +163,5 @@ export const boardModel = {
 	findOneById,
 	createNew,
 	update,
-};
+	getAll,
+}
