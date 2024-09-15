@@ -9,7 +9,12 @@ const createNew = async (req, res, next) => {
 		const createdBoard = await boardService.createNew(req.body)
 
 		//có kết quả thì trả về phía client
-		res.status(StatusCodes.CREATED).json(createdBoard)
+		res.status(StatusCodes.CREATED).json({
+			success: true,
+			status: StatusCodes.CREATED,
+			message: 'Create board successfully',
+			createdBoard,
+		})
 	} catch (error) {
 		next(error)
 	}
