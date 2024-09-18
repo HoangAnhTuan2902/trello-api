@@ -9,6 +9,7 @@ import { loginRoute } from './auth/loginRoute'
 import authMiddleware from '~/middlewares/authMiddleware'
 import { checkAuthRoute } from './auth/checkAuthRoute'
 import { logoutRoute } from './auth/logoutRoute'
+import { workSpaceRoute } from './workSpaceRoute'
 
 const Router = express.Router()
 
@@ -17,8 +18,11 @@ Router.get('/status', (req, res) => {
 	res.status(StatusCodes.OK).json({ message: 'APIs V1 are ready to use.' })
 })
 
+/** workSpace API */
+Router.use('/workspaces', workSpaceRoute)
+
 /**Board APIs */
-Router.use('/boards', authMiddleware, boardRoute)
+Router.use('/boards', boardRoute)
 
 /**Columns APIs */
 Router.use('/columns', authMiddleware, columnRoute)

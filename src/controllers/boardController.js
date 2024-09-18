@@ -32,7 +32,6 @@ const getAll = async (req, res, next) => {
 
 const getDetails = async (req, res, next) => {
 	try {
-		console.log('req.params', req.params)
 		const boardId = req.params.id
 
 		// điều hướng dữ liệu sang service

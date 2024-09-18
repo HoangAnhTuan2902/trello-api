@@ -4,11 +4,12 @@ import { GET_DB } from '~/config/mongodb'
 import { BOARD_TYPES } from '~/utils/constants'
 import { cardModel } from './cardModel'
 import { columnModel } from './columnModel'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 // define Collection (Name & Schema)
-
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
+	workSpaceId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
 	title: Joi.string().required().min(3).max(50).trim().strict(),
 	slug: Joi.string().required().min(3).trim().strict(),
 	description: Joi.string().required().min(3).max(255).trim().strict(),
@@ -32,7 +33,13 @@ const validateBeforeCreate = async (data) => {
 const createNew = async (data) => {
 	try {
 		const validData = await validateBeforeCreate(data)
-		const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
+
+		const newBoardToAdd = {
+			...validData,
+			workSpaceId: new ObjectId(validData.workSpaceId),
+		}
+
+		const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(newBoardToAdd)
 		return createdBoard
 	} catch (error) {
 		throw new Error(error)
@@ -53,9 +60,6 @@ const findOneById = async (id) => {
 // query tổng hợp (aggregate) để lấy toàn bộ columns thuộc về Board
 const getDetails = async (id) => {
 	try {
-		// const result = await GET_DB()
-		// 	.collection(BOARD_COLLECTION_NAME)
-		// 	.findOne({ _id: new ObjectId(id) });
 		const result = await GET_DB()
 			.collection(BOARD_COLLECTION_NAME)
 			.aggregate([
@@ -90,9 +94,9 @@ const getDetails = async (id) => {
 }
 
 const getAll = async () => {
-	const reusult = GET_DB().collection(BOARD_COLLECTION_NAME).find().toArray()
+	const result = GET_DB().collection(BOARD_COLLECTION_NAME).find().toArray()
 
-	return reusult
+	return result
 }
 
 // push 1 giá trị columnId vào cuối mảng columnOrderIds của board

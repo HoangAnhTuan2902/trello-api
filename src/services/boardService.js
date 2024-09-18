@@ -48,7 +48,7 @@ const getDetails = async (boardId) => {
 		// xóa mảng cards ở board ban đầu
 		delete resBoard.cards
 
-		//trả kết quả về, tronboarg Service luôn có return
+		//trả kết quả về, trong board Service luôn có return
 		return resBoard
 	} catch (error) {
 		throw error
