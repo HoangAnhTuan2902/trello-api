@@ -3,10 +3,12 @@ import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
 import { BOARD_TYPES } from '~/utils/constants'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 import { boardModel } from './boardModel'
 
 const WORKSPACE_COLLECTION_NAME = 'workspaces'
 const WORKSPACE_COLLECTION_SCHEMA = Joi.object({
+	userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
 	title: Joi.string().required().min(3).max(50).trim().strict(),
 	slug: Joi.string().required().min(3).trim().strict(),
 	description: Joi.string().required().min(3).max(255).trim().strict(),
@@ -26,8 +28,11 @@ const validateBeforeCreate = async (data) => {
 	})
 }
 
-const getAll = async () => {
-	const result = GET_DB().collection(WORKSPACE_COLLECTION_NAME).find().toArray()
+const getAll = async (userId) => {
+	const result = GET_DB()
+		.collection(WORKSPACE_COLLECTION_NAME)
+		.find({ userId: new ObjectId(userId) })
+		.toArray()
 
 	return result
 }
@@ -35,7 +40,13 @@ const getAll = async () => {
 const createNew = async (data) => {
 	try {
 		const validData = await validateBeforeCreate(data)
-		const createdWorkSpace = await GET_DB().collection(WORKSPACE_COLLECTION_NAME).insertOne(validData)
+
+		const newWorkSpaceToAdd = {
+			...validData,
+			userId: new ObjectId(validData.userId),
+		}
+
+		const createdWorkSpace = await GET_DB().collection(WORKSPACE_COLLECTION_NAME).insertOne(newWorkSpaceToAdd)
 		return createdWorkSpace
 	} catch (error) {
 		throw new Error(error)
@@ -73,8 +84,6 @@ const getDetails = async (workSpaceId) => {
 				},
 			])
 			.toArray()
-
-		console.log(result)
 
 		return result[0] || null
 	} catch (error) {

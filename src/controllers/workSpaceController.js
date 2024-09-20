@@ -2,8 +2,11 @@ import { StatusCodes } from 'http-status-codes'
 import { workSpaceService } from '~/services/workSpaceService'
 
 const getAll = async (req, res, next) => {
+	console.log('req.body', req.params)
+
 	try {
-		const allWorkSpace = await workSpaceService.getAll()
+		const userId = req.params.userId
+		const allWorkSpace = await workSpaceService.getAll(userId)
 
 		res.status(StatusCodes.OK).json(allWorkSpace)
 	} catch (error) {
@@ -12,8 +15,9 @@ const getAll = async (req, res, next) => {
 }
 
 const getDetails = async (req, res, next) => {
+	console.log('res', res)
+
 	try {
-		console.log('workSpaceId', workSpaceId)
 		const workSpaceId = req.params.id
 
 		const workSpace = await workSpaceService.getDetails(workSpaceId)
@@ -26,8 +30,6 @@ const getDetails = async (req, res, next) => {
 
 const createNew = async (req, res, next) => {
 	try {
-		console.log('req.body', req.body)
-
 		const createdWorkSpace = await workSpaceService.createNew(req.body)
 
 		res.status(StatusCodes.CREATED).json({

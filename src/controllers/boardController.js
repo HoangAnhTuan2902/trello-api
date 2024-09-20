@@ -3,8 +3,6 @@ import { boardService } from '~/services/boardService'
 
 const createNew = async (req, res, next) => {
 	try {
-		console.log('req.body', req.body)
-
 		// điều hướng dữ liệu sang service
 		const createdBoard = await boardService.createNew(req.body)
 

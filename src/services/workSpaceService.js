@@ -5,9 +5,9 @@ import ApiError from '~/utils/ApiError'
 import { slugify } from '~/utils/formatters'
 
 /* eslint-disable no-useless-catch */
-const getAll = async () => {
+const getAll = async (userId) => {
 	try {
-		const allWorkSpace = await workSpaceModel.getAll()
+		const allWorkSpace = await workSpaceModel.getAll(userId)
 
 		if (!allWorkSpace) {
 			throw new ApiError(StatusCodes.NOT_FOUND, 'Workspace is Empty')
