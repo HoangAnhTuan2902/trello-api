@@ -10,6 +10,7 @@ import authMiddleware from '~/middlewares/authMiddleware'
 import { checkAuthRoute } from './auth/checkAuthRoute'
 import { logoutRoute } from './auth/logoutRoute'
 import { workSpaceRoute } from './workSpaceRoute'
+import { recentlyViewedBoardsRoute } from './recentlyViewedBoardsRoute'
 
 const Router = express.Router()
 
@@ -40,5 +41,8 @@ Router.use('/auth/login', loginRoute)
 Router.use('/auth/logout', logoutRoute)
 
 Router.use('/auth/check', checkAuthRoute)
+
+// recently viewed boards
+Router.use('/viewed', recentlyViewedBoardsRoute)
 
 export const APIs_V1 = Router

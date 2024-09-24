@@ -91,6 +91,38 @@ const getDetails = async (workSpaceId) => {
 	}
 }
 
+const getAllDetails = async (userId) => {
+	if (!ObjectId.isValid(userId)) {
+		throw new Error('Invalid userId format')
+	}
+
+	try {
+		const result = await GET_DB()
+			.collection(WORKSPACE_COLLECTION_NAME)
+			.aggregate([
+				{
+					$match: {
+						userId: new ObjectId(userId),
+						_destroy: false,
+					},
+				},
+				{
+					$lookup: {
+						from: boardModel.BOARD_COLLECTION_NAME,
+						localField: '_id',
+						foreignField: 'workSpaceId',
+						as: 'boards',
+					},
+				},
+			])
+			.toArray()
+
+		return result || []
+	} catch (error) {
+		throw new Error(`Error in getAllDetails: ${error.message}`)
+	}
+}
+
 export const workSpaceModel = {
 	WORKSPACE_COLLECTION_NAME,
 	WORKSPACE_COLLECTION_SCHEMA,
@@ -98,4 +130,5 @@ export const workSpaceModel = {
 	createNew,
 	findOneById,
 	getDetails,
+	getAllDetails,
 }

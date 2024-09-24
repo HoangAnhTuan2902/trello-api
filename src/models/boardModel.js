@@ -17,6 +17,7 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 	bgImage: Joi.string().uri().required(),
 	columnOrderIds: Joi.array().items(Joi.string()).default([]),
 	createAt: Joi.date().timestamp('javascript').default(Date.now()),
+	viewedAt: Joi.date().timestamp('javascript').default(null),
 	updatedAt: Joi.date().timestamp('javascript').default(null),
 	_destroy: Joi.boolean().default(false),
 })

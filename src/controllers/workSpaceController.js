@@ -2,8 +2,6 @@ import { StatusCodes } from 'http-status-codes'
 import { workSpaceService } from '~/services/workSpaceService'
 
 const getAll = async (req, res, next) => {
-	console.log('req.body', req.params)
-
 	try {
 		const userId = req.params.userId
 		const allWorkSpace = await workSpaceService.getAll(userId)
@@ -14,9 +12,18 @@ const getAll = async (req, res, next) => {
 	}
 }
 
-const getDetails = async (req, res, next) => {
-	console.log('res', res)
+const getAllDetails = async (req, res, next) => {
+	try {
+		const userId = req.params.userId
+		const allWorkSpace = await workSpaceService.getAllDetails(userId)
 
+		res.status(StatusCodes.OK).json(allWorkSpace)
+	} catch (error) {
+		next(error)
+	}
+}
+
+const getDetails = async (req, res, next) => {
 	try {
 		const workSpaceId = req.params.id
 
@@ -55,4 +62,4 @@ const deleteWorkSpace = async (req, res, next) => {
 	}
 }
 
-export const workSpaceController = { getAll, createNew, deleteWorkSpace, getDetails }
+export const workSpaceController = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails }

@@ -18,6 +18,19 @@ const getAll = async (userId) => {
 		throw error
 	}
 }
+const getAllDetails = async (userId) => {
+	try {
+		const allWorkSpace = await workSpaceModel.getAllDetails(userId)
+
+		if (!allWorkSpace) {
+			throw new ApiError(StatusCodes.NOT_FOUND, 'Workspaces is Empty')
+		}
+
+		return allWorkSpace
+	} catch (error) {
+		throw error
+	}
+}
 
 const createNew = async (reqBody) => {
 	try {
@@ -66,4 +79,4 @@ const getDetails = async (workSpaceId) => {
 	}
 }
 
-export const workSpaceService = { getAll, createNew, deleteWorkSpace, getDetails }
+export const workSpaceService = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails }
