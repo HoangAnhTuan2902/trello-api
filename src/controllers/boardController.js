@@ -19,8 +19,10 @@ const createNew = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+	const userId = req.params.userId
+
 	try {
-		const allBoard = await boardService.getAll()
+		const allBoard = await boardService.getAll(userId)
 
 		res.status(StatusCodes.OK).json(allBoard)
 	} catch (error) {

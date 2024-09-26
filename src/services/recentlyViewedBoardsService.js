@@ -1,7 +1,5 @@
-import { StatusCodes } from 'http-status-codes'
 import { boardModel } from '~/models/boardModel'
 import { recentlyViewedBoardsModal } from '~/models/recentlyViewedBoardsModal'
-import ApiError from '~/utils/ApiError'
 
 /* eslint-disable no-useless-catch */
 const recentlyViewedBoards = async (reqBody) => {
@@ -20,10 +18,10 @@ const recentlyViewedBoards = async (reqBody) => {
 
 const getRecentViewedById = async (userId) => {
 	try {
-		const allRecentViewedBoard = await recentlyViewedBoardsModal.getRecentViewedById(userId)
+		let allRecentViewedBoard = await recentlyViewedBoardsModal.getRecentViewedById(userId)
 
 		if (!allRecentViewedBoard) {
-			throw new ApiError(StatusCodes.NOT_FOUND, 'Board is Empty')
+			allRecentViewedBoard = []
 		}
 		return allRecentViewedBoard
 	} catch (error) {

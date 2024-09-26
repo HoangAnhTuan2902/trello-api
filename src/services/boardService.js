@@ -1,11 +1,9 @@
 /* eslint-disable no-useless-catch */
-import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
 
 import { boardModel } from '~/models/boardModel'
 import { cardModel } from '~/models/cardModel'
 import { columnModel } from '~/models/columnModel'
-import ApiError from '~/utils/ApiError'
 import { slugify } from '~/utils/formatters'
 
 const createNew = async (reqBody) => {
@@ -29,14 +27,14 @@ const createNew = async (reqBody) => {
 const getDetails = async (boardId) => {
 	try {
 		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
-		const board = await boardModel.getDetails(boardId)
+		let board = await boardModel.getDetails(boardId)
 		if (!board) {
-			throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+			board = []
 		}
 
 		const resBoard = cloneDeep(board)
 		// đưa card vào từng column
-		resBoard.columns.forEach((column) => {
+		resBoard?.columns?.forEach((column) => {
 			column.cards = resBoard.cards.filter(
 				// .equals là phương thức của MongoDB
 				(card) => card.columnId.equals(column._id),
@@ -55,12 +53,12 @@ const getDetails = async (boardId) => {
 	}
 }
 
-const getAll = async () => {
+const getAll = async (userId) => {
 	try {
-		const allBoard = await boardModel.getAll()
+		let allBoard = await boardModel.getAll(userId)
 
 		if (!allBoard) {
-			throw new ApiError(StatusCodes.NOT_FOUND, 'Board is Empty')
+			allBoard = []
 		}
 		return allBoard
 	} catch (error) {

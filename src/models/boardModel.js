@@ -9,6 +9,7 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 // define Collection (Name & Schema)
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
+	userId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
 	workSpaceId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
 	title: Joi.string().required().min(3).max(50).trim().strict(),
 	slug: Joi.string().required().min(3).trim().strict(),
@@ -38,6 +39,7 @@ const createNew = async (data) => {
 		const newBoardToAdd = {
 			...validData,
 			workSpaceId: new ObjectId(validData.workSpaceId),
+			userId: new ObjectId(validData.userId),
 		}
 
 		const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(newBoardToAdd)
@@ -94,8 +96,11 @@ const getDetails = async (id) => {
 	}
 }
 
-const getAll = async () => {
-	const result = GET_DB().collection(BOARD_COLLECTION_NAME).find().toArray()
+const getAll = async (userId) => {
+	const result = GET_DB()
+		.collection(BOARD_COLLECTION_NAME)
+		.find({ userId: new ObjectId(userId) })
+		.toArray()
 
 	return result
 }

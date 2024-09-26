@@ -5,7 +5,8 @@ import { boardController } from '~/controllers/boardController'
 
 const Router = express.Router()
 
-Router.route('/').get(boardController.getAll).post(boardValidation.createNew, boardController.createNew)
+Router.route('/').post(boardValidation.createNew, boardController.createNew)
+Router.route('/all/:userId').get(boardController.getAll)
 
 Router.route('/:id').get(boardController.getDetails).put(boardValidation.update, boardController.update)
 
