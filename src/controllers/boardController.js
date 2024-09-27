@@ -57,6 +57,21 @@ const update = async (req, res, next) => {
 		next(error)
 	}
 }
+
+const updateViewed = async (req, res, next) => {
+	try {
+		const boardId = req.params.boardId
+
+		// điều hướng dữ liệu sang service
+		const updatedBoard = await boardService.updateViewed(boardId)
+
+		//có kết quả thì trả về phía client
+		res.status(StatusCodes.OK).json(updatedBoard)
+	} catch (error) {
+		next(error)
+	}
+}
+
 const moveCardToDifferentColumn = async (req, res, next) => {
 	try {
 		// điều hướng dữ liệu sang service
@@ -69,10 +84,23 @@ const moveCardToDifferentColumn = async (req, res, next) => {
 	}
 }
 
+const addFavourite = async (req, res, next) => {
+	try {
+		const { boardId, favourite } = req.body
+
+		const updateFavouriteBoard = await boardService.addFavourite(boardId, favourite)
+		res.status(StatusCodes.OK).json(updateFavouriteBoard)
+	} catch (error) {
+		next(error)
+	}
+}
+
 export const boardController = {
-	createNew,
-	getDetails,
-	update,
 	moveCardToDifferentColumn,
+	updateViewed,
+	addFavourite,
+	getDetails,
+	createNew,
+	update,
 	getAll,
 }

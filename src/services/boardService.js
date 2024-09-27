@@ -79,6 +79,18 @@ const update = async (boardId, reqBody) => {
 	}
 }
 
+const updateViewed = async (boardId) => {
+	try {
+		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
+		const updatedBoard = await boardModel.updateViewed(boardId)
+
+		//trả kết quả về, trong Service luôn có return
+		return updatedBoard
+	} catch (error) {
+		throw error
+	}
+}
+
 const moveCardToDifferentColumn = async (reqBody) => {
 	try {
 		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
@@ -105,10 +117,25 @@ const moveCardToDifferentColumn = async (reqBody) => {
 	}
 }
 
+const addFavourite = async (boardId, favourite) => {
+	try {
+		const updateData = { favourite, updatedAt: Date.now() }
+		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
+		const updateFavouriteBoard = await boardModel.addFavourite(boardId, updateData)
+
+		//trả kết quả về, trong Service luôn có return
+		return updateFavouriteBoard
+	} catch (error) {
+		throw error
+	}
+}
+
 export const boardService = {
+	moveCardToDifferentColumn,
+	addFavourite,
+	updateViewed,
 	getDetails,
 	createNew,
 	update,
-	moveCardToDifferentColumn,
 	getAll,
 }

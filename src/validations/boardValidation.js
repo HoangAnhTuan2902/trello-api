@@ -12,6 +12,7 @@ const createNew = async (req, res, next) => {
 		description: Joi.string().required().min(3).max(255).trim().strict(),
 		type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
 		bgImage: Joi.string().uri().required(),
+		favourite: Joi.boolean().valid(true, false).default(false),
 	})
 
 	try {
@@ -77,8 +78,30 @@ const moveCardToDifferentColumn = async (req, res, next) => {
 	}
 }
 
+const addFavourite = async (req, res, next) => {
+	// update không dùng required
+	const correctCondition = Joi.object({
+		favourite: Joi.boolean().valid(true, false).default(false),
+	})
+
+	try {
+		// chỉ định abortEarly: false để hiển thị tất cả các lỗi
+		await correctCondition.validateAsync(req.body, {
+			abortEarly: false,
+			allowUnknown: true,
+		})
+		// đưa request đến Controller sau khi đã validate thành công
+		next()
+	} catch (error) {
+		const errorMessage = new Error(error).message
+		const customError = new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, errorMessage)
+		next(customError)
+	}
+}
+
 export const boardValidation = {
+	moveCardToDifferentColumn,
+	addFavourite,
 	createNew,
 	update,
-	moveCardToDifferentColumn,
 }
