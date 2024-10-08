@@ -62,4 +62,16 @@ const deleteWorkSpace = async (req, res, next) => {
 	}
 }
 
-export const workSpaceController = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails }
+const updateMember = async (req, res, next) => {
+	try {
+		const workSpaceId = req.params.id
+		const { memberId } = req.body
+
+		const result = await workSpaceService.updateMember(workSpaceId, memberId)
+		res.status(StatusCodes.OK).json(result)
+	} catch (error) {
+		next(error)
+	}
+}
+
+export const workSpaceController = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails, updateMember }

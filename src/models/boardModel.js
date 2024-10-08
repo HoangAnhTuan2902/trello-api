@@ -22,6 +22,14 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 	updatedAt: Joi.date().timestamp('javascript').default(null),
 	_destroy: Joi.boolean().default(false),
 	favourite: Joi.boolean().valid(true, false).default(false),
+	members: Joi.array()
+		.items(
+			Joi.object({
+				userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+				role: Joi.string().valid('owner', 'member').default('member').required(),
+			}),
+		)
+		.default([]),
 })
 
 const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
@@ -37,11 +45,22 @@ const createNew = async (data) => {
 	try {
 		const validData = await validateBeforeCreate(data)
 
+		if (!ObjectId.isValid(validData.workSpaceId)) {
+			throw new Error('Invalid ObjectId for workspace or user')
+		}
+
 		const newBoardToAdd = {
 			...validData,
 			workSpaceId: new ObjectId(validData.workSpaceId),
 			userId: new ObjectId(validData.userId),
+			members: [
+				{
+					userId: new ObjectId(validData.userId),
+					role: 'owner',
+				},
+			],
 		}
+		console.log('🚀 ~ createNew ~ newBoardToAdd:', newBoardToAdd)
 
 		const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(newBoardToAdd)
 		return createdBoard
@@ -98,9 +117,9 @@ const getDetails = async (id) => {
 }
 
 const getAll = async (userId) => {
-	const result = GET_DB()
+	const result = await GET_DB()
 		.collection(BOARD_COLLECTION_NAME)
-		.find({ userId: new ObjectId(userId) })
+		.find({ members: { $elemMatch: { userId: new ObjectId(userId) } } })
 		.toArray()
 
 	return result

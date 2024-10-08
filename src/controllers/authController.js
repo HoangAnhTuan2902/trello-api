@@ -94,8 +94,19 @@ const logout = (req, res) => {
 	}
 }
 
+const getAll = async (req, res, next) => {
+	try {
+		const allBoard = await authService.getAll()
+
+		res.status(StatusCodes.OK).json(allBoard)
+	} catch (error) {
+		next(error)
+	}
+}
+
 export const authController = {
 	login,
+	getAll,
 	register,
 	checkAuth,
 	logout,
