@@ -9,7 +9,10 @@ import { slugify } from '~/utils/formatters'
 const createNew = async (reqBody) => {
 	try {
 		// xử lý logic dữ liệu tùy thuộc đặc thù dự án
-		const newBoard = { ...reqBody, slug: slugify(reqBody.title) }
+		const newBoard = {
+			...reqBody,
+			slug: slugify(reqBody.title),
+		}
 
 		// gọi tới tầng Model để xử lý lưu bản ghi newBoard vào trong Database
 		const createdBoard = await boardModel.createNew(newBoard)

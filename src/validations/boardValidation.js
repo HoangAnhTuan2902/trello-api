@@ -13,6 +13,14 @@ const createNew = async (req, res, next) => {
 		type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
 		bgImage: Joi.string().uri().required(),
 		favourite: Joi.boolean().valid(true, false).default(false),
+		members: Joi.array()
+			.items(
+				Joi.object({
+					userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+					role: Joi.string().valid('owner', 'member').default('member').required(),
+				}),
+			)
+			.default([]),
 	})
 
 	try {

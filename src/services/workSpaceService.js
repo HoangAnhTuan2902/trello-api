@@ -34,8 +34,16 @@ const getAllDetails = async (userId) => {
 
 const createNew = async (reqBody) => {
 	try {
-		const newWorkSpace = { ...reqBody, slug: slugify(reqBody.title) }
-		console.log('newWorkSpace', newWorkSpace)
+		const newWorkSpace = {
+			...reqBody,
+			slug: slugify(reqBody.title),
+			members: [
+				{
+					userId: reqBody.userId,
+					role: 'owner',
+				},
+			],
+		}
 
 		const createdWorkSpace = await workSpaceModel.createNew(newWorkSpace)
 
@@ -79,4 +87,16 @@ const getDetails = async (workSpaceId) => {
 	}
 }
 
-export const workSpaceService = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails }
+const updateMember = async (workSpaceId, memberId) => {
+	console.log('🚀 ~ updateMember ~ memberId:', memberId)
+	try {
+		const updateData = { members: { userId: memberId, role: 'member' }, updatedAt: Date.now() }
+		const updateMember = await workSpaceModel.updateMember(workSpaceId, updateData)
+
+		return updateMember
+	} catch (error) {
+		throw error
+	}
+}
+
+export const workSpaceService = { getAll, createNew, deleteWorkSpace, getDetails, getAllDetails, updateMember }

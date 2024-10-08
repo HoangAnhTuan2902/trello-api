@@ -17,9 +17,17 @@ const WORKSPACE_COLLECTION_SCHEMA = Joi.object({
 	createAt: Joi.date().timestamp('javascript').default(Date.now()),
 	updatedAt: Joi.date().timestamp('javascript').default(null),
 	_destroy: Joi.boolean().default(false),
+	members: Joi.array()
+		.items(
+			Joi.object({
+				userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+				role: Joi.string().valid('owner', 'member').required(),
+			}),
+		)
+		.default([]),
 })
 
-// const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
+const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
 
 // thêm các dữ liệu mặc định cho các trường cần thiết trước khi tạo mới bản ghi
 const validateBeforeCreate = async (data) => {
@@ -31,7 +39,7 @@ const validateBeforeCreate = async (data) => {
 const getAll = async (userId) => {
 	const result = GET_DB()
 		.collection(WORKSPACE_COLLECTION_NAME)
-		.find({ userId: new ObjectId(userId) })
+		.find({ members: { $elemMatch: { userId: new ObjectId(userId) } } })
 		.toArray()
 
 	return result
@@ -44,6 +52,12 @@ const createNew = async (data) => {
 		const newWorkSpaceToAdd = {
 			...validData,
 			userId: new ObjectId(validData.userId),
+			members: [
+				{
+					userId: new ObjectId(validData.userId),
+					role: 'owner',
+				},
+			],
 		}
 
 		const createdWorkSpace = await GET_DB().collection(WORKSPACE_COLLECTION_NAME).insertOne(newWorkSpaceToAdd)
@@ -52,6 +66,7 @@ const createNew = async (data) => {
 		throw new Error(error)
 	}
 }
+
 const findOneById = async (id) => {
 	try {
 		const result = await GET_DB()
@@ -102,7 +117,9 @@ const getAllDetails = async (userId) => {
 			.aggregate([
 				{
 					$match: {
-						userId: new ObjectId(userId),
+						members: {
+							$elemMatch: { userId: new ObjectId(userId) },
+						},
 						_destroy: false,
 					},
 				},
@@ -123,12 +140,40 @@ const getAllDetails = async (userId) => {
 	}
 }
 
+const updateMember = async (workSpaceId, updateData) => {
+	try {
+		Object.keys(updateData).forEach((fieldname) => {
+			if (INVALID_UPDATE_FIELDS.includes(fieldname)) {
+				delete updateData[fieldname]
+			}
+		})
+
+		if (updateData.members) updateData.members.userId = new ObjectId(updateData.members.userId)
+
+		const result = await GET_DB()
+			.collection(WORKSPACE_COLLECTION_NAME)
+			.findOneAndUpdate(
+				{
+					_id: new ObjectId(workSpaceId),
+				},
+				{ $push: { members: { ...updateData.members } } },
+				{ $set: updateData.updatedAt },
+				{ ReturnDocument: 'after' },
+			)
+
+		return result
+	} catch (error) {
+		throw new Error(error)
+	}
+}
+
 export const workSpaceModel = {
 	WORKSPACE_COLLECTION_NAME,
 	WORKSPACE_COLLECTION_SCHEMA,
 	getAll,
 	createNew,
-	findOneById,
 	getDetails,
+	findOneById,
+	updateMember,
 	getAllDetails,
 }

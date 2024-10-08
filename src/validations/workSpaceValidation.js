@@ -11,6 +11,14 @@ const createNew = async (req, res, next) => {
 		description: Joi.string().required().min(3).max(255).trim().strict(),
 		type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
 		avatar: Joi.string().uri().required(),
+		members: Joi.array()
+			.items(
+				Joi.object({
+					userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+					role: Joi.string().valid('owner', 'member').default('member').required(),
+				}),
+			)
+			.default([]),
 	})
 	try {
 		await correctCondition.validateAsync(req.body, { abortEarly: false })

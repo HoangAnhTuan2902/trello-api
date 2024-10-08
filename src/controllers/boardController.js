@@ -5,6 +5,7 @@ const createNew = async (req, res, next) => {
 	try {
 		// điều hướng dữ liệu sang service
 		const createdBoard = await boardService.createNew(req.body)
+		console.log('🚀 ~ createNew ~ req.body:', req.body)
 
 		//có kết quả thì trả về phía client
 		res.status(StatusCodes.CREATED).json({
@@ -19,9 +20,8 @@ const createNew = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
-	const userId = req.params.userId
-
 	try {
+		const userId = req.params.userId
 		const allBoard = await boardService.getAll(userId)
 
 		res.status(StatusCodes.OK).json(allBoard)

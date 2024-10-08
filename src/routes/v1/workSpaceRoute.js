@@ -9,7 +9,7 @@ Router.route('/').post(workSpaceValidation.createNew, workSpaceController.create
 Router.route('/u/:userId').get(workSpaceController.getAll)
 Router.route('/all/:userId').get(workSpaceController.getAllDetails)
 
-Router.route('/:id').get(workSpaceController.getDetails)
+Router.route('/:id').get(workSpaceController.getDetails).put(workSpaceController.updateMember)
 // .delete(workSpaceValidation.deleteWorkSpace, workSpaceController.deleteWorkSpace)
 
 export const workSpaceRoute = Router

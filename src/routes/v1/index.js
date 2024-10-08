@@ -11,6 +11,7 @@ import { checkAuthRoute } from './auth/checkAuthRoute'
 import { logoutRoute } from './auth/logoutRoute'
 import { workSpaceRoute } from './workSpaceRoute'
 import { recentlyViewedBoardsRoute } from './recentlyViewedBoardsRoute'
+import { usersRoute } from './auth/usersRoute'
 
 const Router = express.Router()
 
@@ -33,6 +34,9 @@ Router.use('/cards', authMiddleware, cardRoute)
 
 /** Register */
 Router.use('/auth/register', registerRoute)
+
+/** User */
+Router.use('/users', usersRoute)
 
 /** Login */
 Router.use('/auth/login', loginRoute)
